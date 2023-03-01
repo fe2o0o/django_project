@@ -1,0 +1,420 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} | DATA ANALYSIS {% endblock %}
+{% block content %}
+<style>
+  body{
+    overflow: hidden;
+  }
+  .wrapper-container{
+    position: fixed;
+    margin-left: 17rem;
+    width: 75%;
+    overflow: scroll;
+    height: 80%;
+  }
+  @media (max-width:1200px){
+    .wrapper-container.chart{
+      gap: 20px;
+  }
+  .wrapper-container{
+    position: fixed;
+    margin-left: 17rem;
+    width: 75%;
+    overflow: scroll;
+    height: 80%;
+  }
+   
+  }
+  @media (max-width:1000px){
+    .wrapper-container{
+      margin-left: 7rem;
+      width: 85%;
+    }
+  }
+  @media (max-width:900px){
+    .wrapper-container{
+      margin-left: 4rem;
+      width: 80%;
+    }
+    
+    
+  }
+ 
+  .wrapper-container .chart-card{
+        width: 400px;
+        height: 300px;
+        
+    }
+  .wrapper-container.chart{
+        display: grid;
+        grid-template-columns: repeat(2,1fr);
+        gap: 100px;
+    }
+    .print {
+        padding: 10px 0;
+        width: 150px;
+        cursor: pointer;
+        border-radius: 5px;
+        font-size: 15px;
+        background-color: rgb(91, 201, 91);
+        color: #fff;
+        text-transform: capitalize;
+        border: none;
+        outline: 0;
+    }
+    .print:hover{
+        transform: scale(1.02);
+        transition: transform 300ms ease;
+    }
+    .print a{
+        color: #fff;
+    }
+    .print:active{
+        border: 1px solid orange;
+    }
+    .print.send{
+        background-color: rgb(245, 128, 128);
+    }
+
+  @media (max-width:600px){
+  .wrapper-container.chart{
+        grid-template-columns: repeat(1,1fr);
+    }
+  .wrapper-container.chart h2{
+       font-size: 18px;
+    }
+  .wrapper-container .chart-card{
+      width: 300px;
+      height: 200px;
+      
+  }
+  .wrapper-container .chart-card.pie{
+    margin-left: 1rem;
+    
+  }
+  .wrapper-container .chart-card.polar{
+   margin-left: 2rem;
+  
+  }
+    }
+</style>
+<section class="wrapper">
+    <div class="wrapper-sidebar">
+     {% include 'partials/_sidebar.html' %}   
+    </div>
+    <div class="wrapper-container chart">
+        <!-- BAR CHART -->
+        <div class="statistique" style="margin: 1rem;">
+          <h2 style="color: rgb(118, 170, 206);">Data Analysis of the survey</h2>
+          <p style="margin-top: 1rem;">Number of answers: <span style="color: orangered;">{{answers}}</span></p>
+          <p style="margin-top: 1rem;">Male: <span style="color: orangered;">{{male}}</span></p>
+          <p style="margin-top: 1rem;">Female: <span style="color: orangered;">{{female}}</span></p>
+          <p style="margin-top: 1rem;">Heard About The Brand: <span style="color: rgb(10, 96, 46);">{{heard}}</span></p>
+          <p style="margin-top: 1rem;">Never Heard About The Brand: <span style="color: rgb(10, 96, 46);">{{never_heard}}</span></p>
+        </div>
+  
+        <div class="chart-card">
+            <div class="charts">
+                <canvas  id="myChart"></canvas>
+                
+              </div>
+              
+              <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+              
+              <script>
+                const ctx = document.getElementById('myChart');
+                
+              
+                new Chart(ctx, {
+                  type: 'bar',
+                  data: {
+                    labels: ['الذكور','الاناث'],
+                    datasets: [{
+                      label: 'الاجابات',
+                      data: [{{male}}, {{female}}],
+                      borderWidth: 1
+                    }]
+                  },
+                  options: {
+                    scales: {
+                      y: {
+                        beginAtZero: true
+                      }
+                    }
+                  }
+                });
+
+                
+              </script>
+              
+        </div>
+       
+
+      <!-- No Answer Analysis -->
+       <!-- BAR CHART -->
+       <div class="chart-card">
+        <div  id="myChart6"></div>
+        <script src="https://cdn.jsdelivr.net/npm/apexcharts" ></script>
+        <script>
+         // bar chart
+         var options = {
+          chart: {
+            type: 'bar'
+          },
+          series: [{
+            name: 'problems',
+            data: [{{high_price}},{{not_enough}},{{not_quality}},{{rare_product}}]
+          }],
+          xaxis: {
+            categories: ['أسعار مرتفعة', 'لا تغطي كل متطلباتي', 'جودة لا ترقى لمعاييري', 'ندرة المنتج على طول السنة', 'مشاكل أخرى']
+          },
+          title: {
+            text: 'الصعوبات التي يواجهها  الزبائن مع العلامة التجارية ',
+            align: 'center'
+          }
+        };
+        var chart = new ApexCharts(document.querySelector("#myChart6"), options);
+        chart.render();
+      </script>
+    </div>
+      <!-- PIE CHART -->
+    <div class="chart-card">
+      <div  id="myChart7"></div>
+      <script>
+       // pie chart
+       var options = {
+        chart: {
+        type: 'pie'
+        },
+        series: [{{product_quality}}, {{good_price}}, {{quality_and_price}}, {{other_things}}],
+        labels: ['الجودة العالية', 'الثمن المناسب', 'الاثنين معا', 'أشياء أخرى'],
+        title: {
+          text: ' الأشياء التي يبحث عنها الزبائن في العلامة التجارية',
+          align: 'center'
+        }
+      };
+      var chart = new ApexCharts(document.querySelector("#myChart7"), options);
+      chart.render();
+    </script>
+  </div>
+      
+      <!-- LINE CHART -->
+      <div class="chart-card">
+        <div  id="myChart8"></div>
+        <script>
+         // line chart
+         var options = {
+          chart: {
+            type: 'line'
+          },
+          series: [{
+             name: 'المنتجات',
+             data: [{{p_access}},{{p_clothings}},{{p_shoes}}]
+          }],
+          xaxis: {
+            categories: ['أكسسوارت', 'ملابس', 'أحذية']
+          },
+          title: {
+            text: '  نسب المنتجات التي يهتم بها الزوار',
+            align: 'left'
+          }
+        };
+        var chart = new ApexCharts(document.querySelector("#myChart8"), options);
+        chart.render();
+      </script>
+    </div>
+
+     
+    <!-- RADIAL -->
+     <div class="chart-card">
+      <div  id="myChart10"></div>
+      <script>
+       // RADIAL chart
+       var options = {
+        chart: {
+          type: 'radialBar'
+        },
+        series: [{{speaking_brand}}],
+        plotOptions: {
+          radialBar: {
+            hollow: {
+              size: '70%',
+        }
+          },
+        },
+        labels: ['من الزوار'],
+        title: {
+          text: 'نسبة الأشخاص الذين لديهم فضول تجاه العلامة التجارية',
+          align: 'left'
+        }
+      };
+      var chart = new ApexCharts(document.querySelector("#myChart10"), options);
+      chart.render();
+    </script>
+  </div>
+
+  <!-- area -->
+  <div class="chart-card">
+    <div  id="myChart11"></div>
+    <script>
+     // AREA chart
+     var options = {
+      chart: {
+        type: 'area'
+      },
+      series: [{
+        name: 'الاحتمال',
+        data: [{{one}},{{two}},{{three}},{{four}},{{five}},{{six}},{{seven}},{{eight}},{{nine}},{{teen}}]
+      }],
+      title: {
+        text: 'احتمالية مشاركة العلامى التجارية مع أشخاص أخرين',
+        align: 'left'
+      },
+      xaxis: {
+        categories: ['10%', '20%', '30%', '40%', '50%', '60%', '70%','80%','90%','100%']
+      }
+    }
+
+    var chart = new ApexCharts(document.querySelector("#myChart11"), options);
+    chart.render();
+  </script>
+</div>
+   
+<!-- DONUT -->
+<div class="chart-card">
+  <div  id="myChart12"></div>
+  <script>
+   // DONUT chart
+   var options = {
+    chart: {
+      type: 'donut'
+    },
+    series: [{{n_star1}},{{n_star2}},{{n_star2}},{{n_star3}},{{n_star4}}],
+    labels: ['سيئ', 'معقول', 'جيد', 'جيد جدا', 'ممتاز'],
+    title: {
+      text: 'مدى رضا الزوار عن منتجات و خدمات العلامة التجارية',
+      align: 'center'
+    }
+  };
+
+
+  var chart = new ApexCharts(document.querySelector("#myChart12"), options);
+  chart.render();
+</script>
+</div>
+
+<!-- ANSWERA YES ANALYSIS -->
+ <!-- PIE CHART -->
+ <div class="chart-card polar">
+  <canvas  id="myChart2"></canvas>
+  <script>
+      const ctx2 = document.getElementById('myChart2');
+   // pie chart
+   new Chart(ctx2, {
+        type: 'polarArea',
+        data: {
+          labels: ['1 STAR', '2 STAR', ' 3 STAR', '4 STAR', '5 STAR'],
+          datasets: [{
+            label: '# of Votes',
+            data: [{{star1}}, {{star2}}, {{star3}}, {{star4}},{{star5}}],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+  </script>
+</div>
+<!-- LINE CHART -->
+<div class="chart-card pie">
+  <canvas  id="myChart3"></canvas>
+  <script>
+      const ctx3 = document.getElementById('myChart3');
+   // pie chart
+   new Chart(ctx3, {
+        type: 'pie',
+        data: {
+          labels: ['الشهر الماضي', 'منذ 6 أشهر', 'منذ عام تقريبا', 
+          'منذ بداية الاعلان عن العلامة التجارية',],
+          datasets: [{
+            label: '# of Votes',
+            data: [{{last_month}},{{six_month_ago}},{{last_year}},{{from_start}}],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+  </script>
+</div>
+<!-- POLAR CHART -->
+<div class="chart-card">
+  <canvas  id="myChart4"></canvas>
+  <script>
+      const ctx4 = document.getElementById('myChart4');
+   // line chart
+   new Chart(ctx4, {
+        type: 'line',
+        data: {
+          labels: ['من العائلة أو الأصدقاء أو الزملاء', 
+          'وسائل التواصل الاجتماعي',
+           'اللوحات الاعلانية', 'اعلانات تطبيقات الجوال','الاعلانات التلفزونية', 'طريقة أخرى'],
+          datasets: [{
+            label: 'مصدر الزوار من الاعلانات',
+            data: [{{from_family}},{{from_socialmedia}},{{from_tbleshow}},
+            {{from_tvshow}},{{from_application}},{{from_other}}],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+  </script>
+</div>
+<!-- POLAR CHART -->
+<div class="chart-card">
+<canvas  id="myChart5"></canvas>
+<script>
+    const ctx5 = document.getElementById('myChart5');
+ // pie chart
+ new Chart(ctx5, {
+      type: 'line',
+      data: {
+        labels: ['القاهرة','المنية','الجيزة','دندرة','الاسكندرية'],
+        datasets: [{
+          label: 'مصدر الزوار حسب بعض المدن',
+          data: [{{cairo}},{{MinyA}},{{Giza}},{{Dandarah}},{{Alexandria}}],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+</script>
+</div>
+    </div>
+    
+</section>
+
+{% endblock %}
